@@ -42,4 +42,12 @@ public class ListaCompraService {
 		}
 		return v;
 	}
+	public boolean eliminar2(int IdLista){
+		boolean v = false;
+		if(this.listaCompraDAO.findById(IdLista).isPresent()) {
+			this.listaCompraDAO.deleteById(IdLista);
+			v = true;
+		}
+		return v;
+	}
 }
