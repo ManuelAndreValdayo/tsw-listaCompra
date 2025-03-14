@@ -1,7 +1,6 @@
 package edu.uclm.esi.listacompra.dao;
-import java.util.List;
-import java.util.Optional;
 
+import edu.uclm.esi.listacompra.entities.ListaCompra;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,16 +8,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.uclm.esi.listacompra.entities.ListaCompra;
+import java.util.List;
 
 @Repository
-public interface ListaCompraDAO extends JpaRepository <ListaCompra, Integer>{
+public interface ListaCompraDAO extends JpaRepository<ListaCompra, Integer> {
 
-    @Query("SELECT l FROM ListaCompra l WHERE l.id_usuario = :idUsuario")
-    Optional<List<ListaCompra>> findByUserId(@Param("idUsuario") int idUsuario);
-    
+    // Busca listas donde el usuario es propietario o miembro
+    @Query("SELECT l FROM ListaCompra l LEFT JOIN l.miembros m WHERE l.propietario.id = :usuarioId OR m.id = :usuarioId")
+    List<ListaCompra> findByPropietarioOrMiembro(@Param("usuarioId") Integer usuarioId);
+
+    // Busca listas donde el usuario es propietario
+    List<ListaCompra> findByPropietario_Id(Integer usuarioId);
+
+    // Actualizar nombre de una lista
     @Modifying
     @Transactional
-    @Query("UPDATE ListaCompra l SET l.Nombre = :#{#listaCompra.nombre} WHERE l.Id = :#{#listaCompra.id}")
-    Integer updateLista(@Param("listaCompra") ListaCompra listaCompra);
+    @Query("UPDATE ListaCompra l SET l.nombre = :nombre WHERE l.id = :id")
+    int updateNombreLista(@Param("id") Integer id, @Param("nombre") String nombre);
 }
