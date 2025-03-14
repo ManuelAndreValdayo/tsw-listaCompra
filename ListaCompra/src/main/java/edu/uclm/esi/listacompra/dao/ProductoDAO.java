@@ -1,35 +1,34 @@
 package edu.uclm.esi.listacompra.dao;
 
-import java.util.List;
-import java.util.Optional;
-
+import edu.uclm.esi.listacompra.entities.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.uclm.esi.listacompra.entities.ListaCompra;
-import edu.uclm.esi.listacompra.entities.Producto;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ProductoDAO extends JpaRepository <Producto, Integer>{    
-    @Query("SELECT p.Id FROM Producto p WHERE p.Nombre = :nombre")
-    Optional<Integer> findProductByName(@Param("nombre") String nombre);
-    
-    @Query("SELECT p FROM Producto p WHERE p.id_lista_compra = :id_lista_compra")
-    Optional <List<Producto>> findProductByIdLista(@Param("id_lista_compra") Integer id_lista_compra);
-    
-    @Query("SELECT p.Id FROM Producto p WHERE p.Nombre = :nombre AND p.id_lista_compra = :id_lista_compra")
-    Optional<Integer> findProductByIdLista(@Param("nombre") String nombre, @Param("id_lista_compra") int id_lista_compra);
-    
-    @Query("SELECT p FROM Producto p WHERE p.Nombre = :nombre")
-    Producto getProduct(@Param("nombre") String nombre);
+public interface ProductoDAO extends JpaRepository<Producto, Integer> {
 
+    // Buscar productos por nombre
+    Optional<Producto> findByNombre(String nombre);
+
+    // Buscar productos por lista de compra
+    List<Producto> findByListaCompra_Id(Integer listaCompraId);
+
+    // Buscar un producto específico dentro de una lista
+    Optional<Producto> findByNombreAndListaCompra_Id(String nombre, Integer listaCompraId);
+
+    // Eliminar un producto por su ID y su lista de compra
+    void deleteByIdAndListaCompra_Id(Integer id, Integer listaCompraId);
+
+    // Actualizar el nombre y cantidad de un producto
     @Modifying
     @Transactional
-    @Query("UPDATE Producto p SET p.Nombre = :#{#producto.nombre}, p.Cantidad = :#{#producto.cantidad} WHERE p.Id = :#{#producto.id}")
-    Integer modificar(@Param("producto") Producto producto);
+    @Query("UPDATE Producto p SET p.nombre = :nombre, p.cantidadTotal = :cantidad WHERE p.id = :id")
+    int modificarProducto(@Param("id") Integer id, @Param("nombre") String nombre, @Param("cantidad") int cantidad);
 }

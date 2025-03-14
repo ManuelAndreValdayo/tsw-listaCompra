@@ -1,62 +1,90 @@
 package edu.uclm.esi.listacompra.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "productos")
 public class Producto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int Id;
+	private int id;
 	
-	@JsonProperty("nombre")
-	private String Nombre;
+	private String nombre;
+	private int cantidadTotal;
+	private int cantidadComprada;
 	
-	@JsonProperty("id_lista_compra")
-	private int id_lista_compra;
+	private Integer creadoPorId;
 	
-	@JsonProperty("cantidad")
-	private int Cantidad;
+	@ManyToOne
+	@JoinColumn(name = "lista_compra_id", nullable = false)
+	private ListaCompra listaCompra;
 	
-
-	public int getIdListaCompra() {
-		return id_lista_compra;
+	public Producto() {}
+	
+	public Producto(String nombre, int cantidadTotal, int cantidadComprada, Integer creadoPorId, ListaCompra listaCompra) {
+		this.nombre = nombre;
+        this.cantidadTotal = cantidadTotal;
+        this.cantidadComprada = cantidadComprada;
+        this.creadoPorId = creadoPorId;
+        this.listaCompra = listaCompra;		
 	}
-
-	public void setIdListaCompra(int idListaCompra) {
-		id_lista_compra = idListaCompra;
+	
+	public int getCantidadPendiente() {
+		return Math.max(0, cantidadTotal - cantidadComprada);
 	}
-
-	public int getCantidad() {
-		return Cantidad;
-	}
-
-	public void setCantidad(int cantidad) {
-		Cantidad = cantidad;
-	}
-
+	
+	//Getters y Setters
 	public int getId() {
-		return Id;
+		return id;
 	}
 
-	public void setId(int Id) {
-		this.Id = Id;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getNombre() {
-		return Nombre;
+		return nombre;
 	}
 
-	public void setNombre(String Nombre) {
-		this.Nombre = Nombre;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public int getCantidadTotal() {
+		return cantidadTotal;
+	}
+
+	public void setCantidadTotal(int cantidadTotal) {
+		this.cantidadTotal = cantidadTotal;
+	}
+
+	public int getCantidadComprada() {
+		return cantidadComprada;
+	}
+
+	public void setCantidadComprada(int cantidadComprada) {
+		this.cantidadComprada = cantidadComprada;
+	}
+
+	public Integer getCreadoPorId() {
+		return creadoPorId;
+	}
+
+	public void setCreadoPorId(Integer creadoPorId) {
+		this.creadoPorId = creadoPorId;
+	}
+
+	public ListaCompra getListaCompra() {
+		return listaCompra;
+	}
+
+	public void setListaCompra(ListaCompra listaCompra) {
+		this.listaCompra = listaCompra;
 	}
 }
