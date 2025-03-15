@@ -17,7 +17,7 @@ public class Usuario {
     private String email;
     private boolean esPremium;
 
-    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ListaCompra> listasCreadas = new ArrayList<>();
 
     @ManyToMany
