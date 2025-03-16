@@ -1,10 +1,14 @@
 package edu.uclm.esi.listacompra.http;
 
 import edu.uclm.esi.listacompra.dto.ProductoDTO;
+import edu.uclm.esi.listacompra.dto.UsuarioDTO;
 import edu.uclm.esi.listacompra.entities.*;
 import edu.uclm.esi.listacompra.services.*;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +35,7 @@ public class ProductoController {
 	/**
 	 * Obtener los productos de una lista
 	 */
+	@Deprecated
 	@GetMapping("/{listaId}")
 	public ResponseEntity<List<ProductoDTO>> obtenerProductos(@PathVariable Integer listaId,
 			@RequestHeader("Authorization") String token) {
@@ -42,43 +47,50 @@ public class ProductoController {
 		log.info("Lista {} tiene {} productos.", listaId, productos.size());
 		return ResponseEntity.ok(productos);
 	}
+	
+	@GetMapping("/{id}/productos")
+	public ResponseEntity<Page<ProductoDTO>> obtenerProductosLista(
+	    @PathVariable Integer id,
+	    @RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "10") int size
+	) {
+	    Page<Producto> productosPage = productoService.obtenerProductosPaginados(id, page, size);
+	    
+	    Page<ProductoDTO> dtoPage = productosPage.map(p -> 
+	        new ProductoDTO(
+	            p.getId(),
+	            p.getNombre(),
+	            p.getCantidadTotal(),
+	            p.getCantidadComprada(),
+	            id
+	        )
+	    );
+	    
+	    return ResponseEntity.ok(dtoPage);
+	}
 
 	/**
 	 * Agregar un producto a una lista
 	 */
 	@PostMapping
-	public ResponseEntity<ProductoDTO> agregarProducto(@RequestBody ProductoDTO productoDTO,
+	public ResponseEntity<ProductoDTO> agregarProducto(@RequestBody @Valid ProductoDTO productoDTO,
 			@RequestHeader("Authorization") String token) {
-		log.info("Solicitud para agregar producto '{}' a la lista {}", productoDTO.getNombre(),
-				productoDTO.getListaId());
-		UsuarioValidado usuarioValidado = userService.validarToken(token);
-		Usuario usuario = userService.obtenerUsuarioPorId(usuarioValidado.getId());
+		log.info("Solicitud para agregar producto '{}' a la lista {}", productoDTO.getNombre(), productoDTO.getListaId());
+		UsuarioDTO usuario = userService.validarToken(token);
 
 		// Recuperamos la lista desde la BD
 		ListaCompra lista = listaCompraService.obtenerListaPorId(productoDTO.getListaId());
 
-		if (!lista.getPropietario().getId().equals(usuario.getId()) && !lista.getMiembros().contains(usuario)) {
+		if (!lista.getPropietarioId().equals(usuario.getId()) && !lista.getMiembrosIds().contains(usuario.getId())) {
 			log.warn("Usuario {} no tiene permisos para añadir productos a la lista {}", usuario.getId(),
 					lista.getId());
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos");
 		}
 
-		if (productoDTO.getNombre() == null || productoDTO.getNombre().trim().isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre del producto es obligatorio");
-		}
-		if (productoDTO.getCantidadTotal() <= 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor a cero");
-		}
-
 		// Creamos el producto con una instancia real de ListaCompra
-		Producto nuevoProducto = new Producto(productoDTO.getNombre(), productoDTO.getCantidadTotal(), 0, // cantidadComprada
-																											// inicia en
-																											// 0
-				usuario.getId(), // creadoPorId
-				lista // Ahora es una entidad real, no una instancia vacía
-		);
+		Producto nuevoProducto = new Producto(productoDTO.getNombre(), productoDTO.getCantidadTotal(), 0, usuario.getId(), lista);
 
-		nuevoProducto = productoService.crearProducto(productoDTO.getListaId(), nuevoProducto);
+		nuevoProducto = productoService.crearProducto(lista, nuevoProducto, usuario.getId());
 		log.info("Producto '{}' agregado con ID {} a la lista {}", nuevoProducto.getNombre(), nuevoProducto.getId(),
 				productoDTO.getListaId());
 

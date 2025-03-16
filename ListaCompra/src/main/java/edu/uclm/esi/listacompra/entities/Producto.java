@@ -7,19 +7,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "productos")
 public class Producto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	private String nombre;
 	private int cantidadTotal;
 	private int cantidadComprada;
 
-	private Integer creadoPorId;
+	private Integer creadorId;
 
 	@ManyToOne
 	@JoinColumn(name = "lista_compra_id", nullable = false)
@@ -33,10 +34,11 @@ public class Producto {
 		this.nombre = nombre;
 		this.cantidadTotal = cantidadTotal;
 		this.cantidadComprada = cantidadComprada;
-		this.creadoPorId = creadoPorId;
+		this.creadorId = creadoPorId;
 		this.listaCompra = listaCompra;
 	}
-
+	
+	@Transient
 	public int getCantidadPendiente() {
 		return Math.max(0, cantidadTotal - cantidadComprada);
 	}
@@ -74,12 +76,12 @@ public class Producto {
 		this.cantidadComprada = cantidadComprada;
 	}
 
-	public Integer getCreadoPorId() {
-		return creadoPorId;
+	public Integer getCreadorId() {
+		return creadorId;
 	}
 
-	public void setCreadoPorId(Integer creadoPorId) {
-		this.creadoPorId = creadoPorId;
+	public void setCreadorId(Integer creadorId) {
+		this.creadorId = creadorId;
 	}
 
 	public ListaCompra getListaCompra() {
