@@ -1,11 +1,25 @@
 package edu.uclm.esi.listacompra.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+
 public class ProductoDTO {
 	private Integer id;
-	private String nombre;
-	private int cantidadTotal;
-	private int cantidadComprada;
-	private Integer listaId; // Solo el ID de la lista
+
+    @NotBlank(message = "El nombre del producto no puede estar vacío")
+    private String nombre;
+
+    @PositiveOrZero(message = "La cantidad total debe ser cero o positiva")
+    private int cantidadTotal;
+
+    @PositiveOrZero(message = "La cantidad comprada debe ser cero o positiva")
+    private int cantidadComprada;
+
+    @NotNull(message = "El ID de la lista es obligatorio")
+    @Positive(message = "El ID de la lista debe ser un número válido")
+    private Integer listaId;
 
 	public ProductoDTO() {
 	}
