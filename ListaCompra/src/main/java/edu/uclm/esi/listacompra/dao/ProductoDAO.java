@@ -14,21 +14,21 @@ import java.util.Optional;
 @Repository
 public interface ProductoDAO extends JpaRepository<Producto, Integer> {
 
-    // Buscar productos por nombre
-    Optional<Producto> findByNombre(String nombre);
+	// Buscar productos por nombre
+	Optional<Producto> findByNombre(String nombre);
 
-    // Buscar productos por lista de compra
-    List<Producto> findByListaCompra_Id(Integer listaCompraId);
+	// Buscar productos por lista de compra
+	List<Producto> findByListaCompra_Id(Integer listaCompraId);
 
-    // Buscar un producto específico dentro de una lista
-    Optional<Producto> findByNombreAndListaCompra_Id(String nombre, Integer listaCompraId);
+	// Buscar un producto específico dentro de una lista
+	Optional<Producto> findByNombreAndListaCompra_Id(String nombre, Integer listaCompraId);
 
-    // Eliminar un producto por su ID y su lista de compra
-    void deleteByIdAndListaCompra_Id(Integer id, Integer listaCompraId);
+	// Eliminar un producto por su ID y su lista de compra
+	void deleteByIdAndListaCompra_Id(Integer id, Integer listaCompraId);
 
-    // Actualizar el nombre y cantidad de un producto
-    @Modifying
-    @Transactional
-    @Query("UPDATE Producto p SET p.nombre = :nombre, p.cantidadTotal = :cantidad WHERE p.id = :id")
-    int modificarProducto(@Param("id") Integer id, @Param("nombre") String nombre, @Param("cantidad") int cantidad);
+	// Actualizar el nombre y cantidad de un producto
+	@Modifying
+	@Transactional
+	@Query("UPDATE Producto p SET p.nombre = :nombre, p.cantidadTotal = :cantidad WHERE p.id = :id")
+	int modificarProducto(@Param("id") Integer id, @Param("nombre") String nombre, @Param("cantidad") int cantidad);
 }

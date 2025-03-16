@@ -19,34 +19,34 @@ import jakarta.persistence.OneToMany;
 @Table(name = "listas")
 public class ListaCompra {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String nombre;
-    private LocalDateTime fechaCreacion;
-    
-    @ManyToOne
-    @JoinColumn(name = "propietario_id", nullable = false)
-    private Usuario propietario;
+	private String nombre;
+	private LocalDateTime fechaCreacion;
 
-    @OneToMany(mappedBy = "listaCompra", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Producto> productos = new ArrayList<>();
+	@ManyToOne
+	@JoinColumn(name = "propietario_id", nullable = false)
+	private Usuario propietario;
 
-    @ManyToMany(mappedBy = "listasComoMiembro")
-    private List<Usuario> miembros = new ArrayList<>();
+	@OneToMany(mappedBy = "listaCompra", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Producto> productos = new ArrayList<>();
 
-    public ListaCompra() {
-        this.fechaCreacion = LocalDateTime.now();
-    }
+	@ManyToMany(mappedBy = "listasComoMiembro")
+	private List<Usuario> miembros = new ArrayList<>();
 
-    public ListaCompra(String nombre, Usuario propietario) {
-        this.nombre = nombre;
-        this.propietario = propietario;
-        this.fechaCreacion = LocalDateTime.now();
-    }
+	public ListaCompra() {
+		this.fechaCreacion = LocalDateTime.now();
+	}
 
-    // Getters y setters
+	public ListaCompra(String nombre, Usuario propietario) {
+		this.nombre = nombre;
+		this.propietario = propietario;
+		this.fechaCreacion = LocalDateTime.now();
+	}
+
+	// Getters y setters
 	public Integer getId() {
 		return id;
 	}

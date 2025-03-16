@@ -14,32 +14,34 @@ public class Producto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
 	private String nombre;
 	private int cantidadTotal;
 	private int cantidadComprada;
-	
+
 	private Integer creadoPorId;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "lista_compra_id", nullable = false)
 	private ListaCompra listaCompra;
-	
-	public Producto() {}
-	
-	public Producto(String nombre, int cantidadTotal, int cantidadComprada, Integer creadoPorId, ListaCompra listaCompra) {
-		this.nombre = nombre;
-        this.cantidadTotal = cantidadTotal;
-        this.cantidadComprada = cantidadComprada;
-        this.creadoPorId = creadoPorId;
-        this.listaCompra = listaCompra;		
+
+	public Producto() {
 	}
-	
+
+	public Producto(String nombre, int cantidadTotal, int cantidadComprada, Integer creadoPorId,
+			ListaCompra listaCompra) {
+		this.nombre = nombre;
+		this.cantidadTotal = cantidadTotal;
+		this.cantidadComprada = cantidadComprada;
+		this.creadoPorId = creadoPorId;
+		this.listaCompra = listaCompra;
+	}
+
 	public int getCantidadPendiente() {
 		return Math.max(0, cantidadTotal - cantidadComprada);
 	}
-	
-	//Getters y Setters
+
+	// Getters y Setters
 	public int getId() {
 		return id;
 	}

@@ -17,7 +17,7 @@ import java.time.Duration;
 @Service
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
-    private final UsuarioDAO usuarioDAO;
+	private final UsuarioDAO usuarioDAO;
 
 	private final WebClient webClient;
 
@@ -53,8 +53,15 @@ public class UserService {
 					}).bodyToMono(UsuarioValidado.class).block(Duration.ofSeconds(timeoutSegundos));
 			return usuario;
 		} catch (Exception e) {
-			log.error("Error al validar token: " + e.getMessage());
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido", e);
+			// Verificar si la causa es TimeoutException
+	        Throwable rootCause = e.getCause();
+	        if (rootCause instanceof java.util.concurrent.TimeoutException) {
+	            log.error("Timeout al validar el token: {}", rootCause.getMessage());
+	            throw new ResponseStatusException(HttpStatus.REQUEST_TIMEOUT, "Tiempo de espera agotado", e);
+	        } else {
+	            log.error("Error al validar token: {}", e.getMessage());
+	            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido", e);
+	        }
 		}
 	}
 
@@ -76,17 +83,16 @@ public class UserService {
 	public boolean puedeAñadirProducto(UsuarioValidado usuario, int productosActuales) {
 		return usuario.isPaidUser() || productosActuales < maxProductosFree;
 	}
-	
+
 	/**
-     * Obtiene un usuario por su ID.
-     */
-    public Usuario obtenerUsuarioPorId(Integer usuarioId) {
-        return usuarioDAO.findById(usuarioId)
-                .orElseThrow(() -> {
-                    log.warn("Usuario no encontrado: {}", usuarioId);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
-                });
-    }
+	 * Obtiene un usuario por su ID.
+	 */
+	public Usuario obtenerUsuarioPorId(Integer usuarioId) {
+		return usuarioDAO.findById(usuarioId).orElseThrow(() -> {
+			log.warn("Usuario no encontrado: {}", usuarioId);
+			return new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
+		});
+	}
 
 	// Clase interna para enviar token
 	private record TokenRequest(String token) {

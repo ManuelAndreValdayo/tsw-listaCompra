@@ -1,22 +1,24 @@
 package edu.uclm.esi.listacompra.dto;
+
 public class ProductoDTO {
-    private Integer id;
-    private String nombre;
-    private int cantidadTotal;
-    private int cantidadComprada;
-    private Integer listaId; // Solo el ID de la lista
+	private Integer id;
+	private String nombre;
+	private int cantidadTotal;
+	private int cantidadComprada;
+	private Integer listaId; // Solo el ID de la lista
 
-    public ProductoDTO() {}
+	public ProductoDTO() {
+	}
 
-    public ProductoDTO(Integer id, String nombre, int cantidadTotal, int cantidadComprada, Integer listaId) {
-        this.id = id;
-        this.nombre = nombre;
-        this.cantidadTotal = cantidadTotal;
-        this.cantidadComprada = cantidadComprada;
-        this.listaId = listaId;
-    }
+	public ProductoDTO(Integer id, String nombre, int cantidadTotal, int cantidadComprada, Integer listaId) {
+		this.id = id;
+		this.nombre = nombre;
+		this.cantidadTotal = cantidadTotal;
+		this.cantidadComprada = cantidadComprada;
+		this.listaId = listaId;
+	}
 
-    // Getters y setters
+	// Getters y setters
 
 	public Integer getId() {
 		return id;

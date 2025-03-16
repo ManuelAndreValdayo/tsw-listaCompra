@@ -9,34 +9,31 @@ import jakarta.persistence.*;
 @Table(name = "usuarios")
 public class Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String nombre;
-    private String email;
-    private boolean esPremium;
+	private String nombre;
+	private String email;
+	private boolean esPremium;
 
-    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ListaCompra> listasCreadas = new ArrayList<>();
+	@OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<ListaCompra> listasCreadas = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-        name = "miembros_lista",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "lista_id")
-    )
-    private List<ListaCompra> listasComoMiembro = new ArrayList<>();
+	@ManyToMany
+	@JoinTable(name = "miembros_lista", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "lista_id"))
+	private List<ListaCompra> listasComoMiembro = new ArrayList<>();
 
-    public Usuario() {}
+	public Usuario() {
+	}
 
-    public Usuario(String nombre, String email, boolean esPremium) {
-        this.nombre = nombre;
-        this.email = email;
-        this.esPremium = esPremium;
-    }
+	public Usuario(String nombre, String email, boolean esPremium) {
+		this.nombre = nombre;
+		this.email = email;
+		this.esPremium = esPremium;
+	}
 
-    // Getters y setters
+	// Getters y setters
 	public Integer getId() {
 		return id;
 	}
@@ -83,5 +80,5 @@ public class Usuario {
 
 	public void setListasComoMiembro(List<ListaCompra> listasComoMiembro) {
 		this.listasComoMiembro = listasComoMiembro;
-	}    
+	}
 }

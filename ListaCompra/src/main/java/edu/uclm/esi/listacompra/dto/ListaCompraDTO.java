@@ -4,7 +4,7 @@ import java.util.List;
 public class ListaCompraDTO {
     private Integer id;
     private String nombre;
-    private Integer propietarioId;
+	private Integer propietarioId;
     private List<ProductoDTO> productos; // Solo para devolver listas con productos
 
     public ListaCompraDTO() {}

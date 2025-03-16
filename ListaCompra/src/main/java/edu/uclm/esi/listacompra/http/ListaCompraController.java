@@ -51,13 +51,11 @@ public class ListaCompraController {
 	public ResponseEntity<ListaCompraDTO> crearLista(@RequestBody ListaCompraDTO listaDTO,
 			@RequestHeader("Authorization") String token) {
 		log.info("Solicitud para crear lista: {}", listaDTO.getNombre());
-		UsuarioValidado usuario = userService.validarToken(token);
+		UsuarioValidado usuarioValidado = userService.validarToken(token);
+		Usuario usuario = userService.obtenerUsuarioPorId(usuarioValidado.getId());
 
-		// Recuperamos el propietario de la lista desde la BD
-		Usuario propietario = userService.obtenerUsuarioPorId(listaDTO.getPropietarioId());
-
-		ListaCompra nuevaLista = new ListaCompra(listaDTO.getNombre(), propietario);
-		nuevaLista = listaCompraService.crearLista(listaDTO.getNombre(), propietario);
+		ListaCompra nuevaLista = new ListaCompra(listaDTO.getNombre(), usuario);
+		nuevaLista = listaCompraService.crearLista(listaDTO.getNombre(), usuario);
 		log.info("Lista creada con ID {} por usuario {}", nuevaLista.getId(), usuario.getId());
 
 		ListaCompraDTO respuesta = new ListaCompraDTO(nuevaLista.getId(), nuevaLista.getNombre(), usuario.getId(),
