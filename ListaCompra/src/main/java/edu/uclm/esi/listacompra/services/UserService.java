@@ -1,23 +1,22 @@
 package edu.uclm.esi.listacompra.services;
 
-import edu.uclm.esi.listacompra.dao.UsuarioDAO;
-import edu.uclm.esi.listacompra.entities.Usuario;
-import edu.uclm.esi.listacompra.entities.UsuarioValidado;
+import edu.uclm.esi.listacompra.dto.UsuarioDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
-	private final UsuarioDAO usuarioDAO;
 
 	private final WebClient webClient;
 
@@ -36,21 +35,22 @@ public class UserService {
 	@Value("${app.limites.productos:10}")
 	private int maxProductosFree;
 
-	public UserService(WebClient.Builder webClientBuilder, UsuarioDAO usuarioDAO) {
+	public UserService(WebClient.Builder webClientBuilder) {
 		this.webClient = webClientBuilder.build();
-		this.usuarioDAO = usuarioDAO;
 	}
 
 	@Cacheable(value = "usuariosCache", key = "#token")
-	public UsuarioValidado validarToken(String token) {
+	public UsuarioDTO validarToken(String token) {
 		validarFormatoToken(token);
 		try {
 			log.info("Validando token con backend: " + token);
-			UsuarioValidado usuario = webClient.post().uri(backendUsuariosUrl + "/api/auth/validate")
+			UsuarioDTO usuario = webClient.post().uri(backendUsuariosUrl + "/api/auth/validate")
 					.bodyValue(new TokenRequest(token)).retrieve().onStatus(status -> status.isError(), response -> {
 						log.error("Error HTTP al validar token: " + response.statusCode());
 						throw new ResponseStatusException(response.statusCode(), "Error al validar token");
-					}).bodyToMono(UsuarioValidado.class).block(Duration.ofSeconds(timeoutSegundos));
+					}).bodyToMono(UsuarioDTO.class).block(Duration.ofSeconds(timeoutSegundos));
+			
+			log.info("Token válido. Usuario ID: {}", usuario.getId());
 			return usuario;
 		} catch (Exception e) {
 			// Verificar si la causa es TimeoutException
@@ -72,29 +72,64 @@ public class UserService {
 		}
 	}
 
-	public boolean puedeCrearLista(UsuarioValidado usuario, int listasActuales) {
-		return usuario.isPaidUser() || listasActuales < maxListasFree;
+	public boolean puedeCrearLista(UsuarioDTO usuario, int listasActuales) {
+		return usuario.isPremium() || listasActuales < maxListasFree;
 	}
 
-	public boolean puedeAñadirMiembro(UsuarioValidado usuario, int miembrosActuales) {
-		return usuario.isPaidUser() || miembrosActuales < maxMiembrosFree;
+	public boolean puedeAñadirMiembro(UsuarioDTO usuario, int miembrosActuales) {
+		return usuario.isPremium() || miembrosActuales < maxMiembrosFree;
 	}
 
-	public boolean puedeAñadirProducto(UsuarioValidado usuario, int productosActuales) {
-		return usuario.isPaidUser() || productosActuales < maxProductosFree;
+	public boolean puedeAñadirProducto(UsuarioDTO usuario, int productosActuales) {
+		return usuario.isPremium() || productosActuales < maxProductosFree;
+	}
+	
+	/**
+	 * 
+	 * @param ids
+	 * @return List<UsuarioDTO>
+	 */
+	public List<UsuarioDTO> obtenerUsuariosPorIds(List<Integer> ids) {
+	    try {
+	        return webClient.post()
+	            .uri(backendUsuariosUrl + "/api/usuarios/batch")
+	            .bodyValue(ids)
+	            .retrieve()
+	            .onStatus(status -> status.isError(), response -> {
+	                log.error("Error al obtener usuarios: {}", response.statusCode());
+	                throw new ResponseStatusException(response.statusCode(), "Error en backend de usuarios");
+	            })
+	            .bodyToMono(new ParameterizedTypeReference<List<UsuarioDTO>>() {})
+	            .block(Duration.ofSeconds(timeoutSegundos));
+	    } catch (Exception e) {
+	        log.error("Error al obtener usuarios: {}", e.getMessage());
+	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al recuperar usuarios");
+	    }
 	}
 
 	/**
 	 * Obtiene un usuario por su ID.
 	 */
-	public Usuario obtenerUsuarioPorId(Integer usuarioId) {
-		return usuarioDAO.findById(usuarioId).orElseThrow(() -> {
-			log.warn("Usuario no encontrado: {}", usuarioId);
-			return new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
-		});
+	public UsuarioDTO obtenerUsuarioPorId(Integer usuarioId) {
+	    try {
+	        log.info("Obteniendo datos del usuario con ID {}", usuarioId);
+	        return webClient.get()
+	                .uri(backendUsuariosUrl + "/api/usuarios/" + usuarioId)
+	                .retrieve()
+	                .bodyToMono(UsuarioDTO.class)
+	                .block(Duration.ofSeconds(timeoutSegundos));
+	    } catch (Exception e) {
+	        log.error("Error al obtener usuario con ID {}", usuarioId, e);
+	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al recuperar usuario");
+	    }
 	}
 
 	// Clase interna para enviar token
 	private record TokenRequest(String token) {
+	}
+
+	public String obtenerNombreUsuario(Integer usuarioId) {
+	    UsuarioDTO usuario = obtenerUsuarioPorId(usuarioId);
+	    return (usuario != null) ? usuario.getNombre() : "Usuario Desconocido";
 	}
 }
