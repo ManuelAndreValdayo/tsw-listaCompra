@@ -1,5 +1,8 @@
 package edu.uclm.esi.listacompra.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +19,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
-@Entity
+@Entity 
 @Table(name = "listas")
+@Getter @Setter
 public class ListaCompra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,57 +46,8 @@ public class ListaCompra {
 	}
 
 	public ListaCompra(String nombre, Integer propietarioId) {
-		this.nombre = nombre;
-		this.propietarioId = propietarioId;
 		this.fechaCreacion = LocalDateTime.now();
-	}
-
-	// Getters y setters
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public LocalDateTime getFechaCreacion() {
-		return fechaCreacion;
-	}
-
-	public void setFechaCreacion(LocalDateTime fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
-	public Integer getPropietarioId() {
-		return propietarioId;
-	}
-
-	public void setPropietarioId(Integer propietarioId) {
 		this.propietarioId = propietarioId;
 	}
-
-	public List<Producto> getProductos() {
-		return productos;
-	}
-
-	public void setProductos(List<Producto> productos) {
-		this.productos = productos;
-	}
-
-	public List<Integer> getMiembrosIds() {
-		return miembrosIds;
-	}
-
-	public void setMiembrosIds(List<Integer> miembrosIds) {
-		this.miembrosIds = miembrosIds;
-	}
-}
+} 

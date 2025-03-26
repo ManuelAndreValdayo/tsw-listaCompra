@@ -2,7 +2,10 @@ package edu.uclm.esi.listacompra.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ListaCompraResumenDTO {
 	private Integer id;
 
@@ -31,44 +34,4 @@ public class ListaCompraResumenDTO {
 		this.numMiembros = numMiembros;
 		this.numProductos = numProductos;
 	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getPropietarioNombre() {
-		return propietarioNombre;
-	}
-
-	public void setPropietarioNombre(String propietarioNombre) {
-		this.propietarioNombre = propietarioNombre;
-	}
-
-	public int getNumMiembros() {
-		return numMiembros;
-	}
-
-	public void setNumMiembros(int numMiembros) {
-		this.numMiembros = numMiembros;
-	}
-
-	public int getNumProductos() {
-		return numProductos;
-	}
-
-	public void setNumProductos(int numProductos) {
-		this.numProductos = numProductos;
-	};
 }

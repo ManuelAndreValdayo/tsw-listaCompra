@@ -8,8 +8,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
 
-@Entity
+@Entity @Getter @Setter
 @Table(name = "productos")
 public class Producto {
 	@Id
@@ -41,54 +43,5 @@ public class Producto {
 	@Transient
 	public int getCantidadPendiente() {
 		return Math.max(0, cantidadTotal - cantidadComprada);
-	}
-
-	// Getters y Setters
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public int getCantidadTotal() {
-		return cantidadTotal;
-	}
-
-	public void setCantidadTotal(int cantidadTotal) {
-		this.cantidadTotal = cantidadTotal;
-	}
-
-	public int getCantidadComprada() {
-		return cantidadComprada;
-	}
-
-	public void setCantidadComprada(int cantidadComprada) {
-		this.cantidadComprada = cantidadComprada;
-	}
-
-	public Integer getCreadorId() {
-		return creadorId;
-	}
-
-	public void setCreadorId(Integer creadorId) {
-		this.creadorId = creadorId;
-	}
-
-	public ListaCompra getListaCompra() {
-		return listaCompra;
-	}
-
-	public void setListaCompra(ListaCompra listaCompra) {
-		this.listaCompra = listaCompra;
 	}
 }

@@ -3,7 +3,10 @@ package edu.uclm.esi.listacompra.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class UsuarioDTO {
     @NotNull(message = "El ID del usuario es obligatorio")
     @Positive(message = "El ID del usuario debe ser un número válido")
@@ -21,30 +24,4 @@ public class UsuarioDTO {
         this.nombre = nombre;
         this.premium = premium;
     }
-
-    // Getters y setters
-    
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public boolean isPremium() {
-		return premium;
-	}
-
-	public void setPremium(boolean premium) {
-		this.premium = premium;
-	}
 }

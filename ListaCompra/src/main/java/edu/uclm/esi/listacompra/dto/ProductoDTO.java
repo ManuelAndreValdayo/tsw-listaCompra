@@ -4,7 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ProductoDTO {
 	private Integer id;
 
@@ -29,48 +32,6 @@ public class ProductoDTO {
 		this.nombre = nombre;
 		this.cantidadTotal = cantidadTotal;
 		this.cantidadComprada = cantidadComprada;
-		this.listaId = listaId;
-	}
-
-	// Getters y setters
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public int getCantidadTotal() {
-		return cantidadTotal;
-	}
-
-	public void setCantidadTotal(int cantidadTotal) {
-		this.cantidadTotal = cantidadTotal;
-	}
-
-	public int getCantidadComprada() {
-		return cantidadComprada;
-	}
-
-	public void setCantidadComprada(int cantidadComprada) {
-		this.cantidadComprada = cantidadComprada;
-	}
-
-	public Integer getListaId() {
-		return listaId;
-	}
-
-	public void setListaId(Integer listaId) {
 		this.listaId = listaId;
 	}
 }
