@@ -110,6 +110,7 @@ public class UserService {
 	/**
 	 * Obtiene un usuario por su ID.
 	 */
+	@Cacheable(value = "usuariosCache", key = "#usuarioId")
 	public UsuarioDTO obtenerUsuarioPorId(Integer usuarioId) {
 	    try {
 	        log.info("Obteniendo datos del usuario con ID {}", usuarioId);
